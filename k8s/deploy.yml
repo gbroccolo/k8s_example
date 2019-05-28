@@ -1,0 +1,35 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anomaly-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: anomaly
+  template:
+    metadata:
+      labels:
+        app: anomaly
+    spec:
+      containers:
+      - name: app
+        image: anomaly_app:latest
+        imagePullPolicy: Never
+        env:
+          - name: REDIS_HOST
+            value: "localhost"
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "400m"
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+        ports:
+        - containerPort: 80
+      - name: redis
+        image: redis:5.0.3-alpine3.8
+        imagePullPolicy: Never
