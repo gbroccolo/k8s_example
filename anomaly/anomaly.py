@@ -17,8 +17,8 @@ def nd_rolling(data, window_size):
                   if it[0] >= idx0 or it[0] <= idx0 + window_size]
         x = np.array([it[2] for it in window])
 
-        yield {'idx': idx,
-               'value': np.array(tuple(sample[idx][1:])),
+        yield {'idx': sample[idx][1],
+               'value': sample[idx][2],
                'window_mean': np.mean(x),
                'window_std': np.std(x)}
 
@@ -30,8 +30,10 @@ def get_anomalous_values(data, window_size=100):
     return: list
     """
 
+    pd_data = pd.read_json(data, orient='records')
+
     # calculate the moving window for each point, and report the anomaly if
     # the distance of the idx-th point is greater than md times the mahalanobis
     # distance
-    return [(p['idx'], p['value']) for p in nd_rolling(data, window_size)
-            if abs(p['value'], p['window_mean']) > 5 * p['window_std']]
+    return [(p['idx'], p['value']) for p in nd_rolling(pd_data, window_size)
+            if abs(p['value'] - p['window_mean']) > 5 * p['window_std']]

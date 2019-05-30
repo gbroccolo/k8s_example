@@ -35,7 +35,7 @@ def bloat2float(x):
     y = re.search("\((.*),(.*)\)", x).group(1, 2)
 
     try:
-        return float(y[0]), float(y[1])
+        return y[0], float(y[1])
     except ValueError:
         # log somewhere ...
         return None, None
@@ -57,7 +57,7 @@ def get_anomalous_data():
     """
 
     # GET
-    if not request.get_data():
+    if request.method == 'GET':
         task_id = REDIS_CACHE.get("running_task_id")
 
         if not task_id:
@@ -73,14 +73,13 @@ def get_anomalous_data():
         else:
             return '', 202
     # POST
-    else:
+    elif request.method == 'POST':
         stream = pd.DataFrame([bloat2float(x) for x in StringIO(
              request.get_data().decode('utf-8')).getvalue().split()])
 
-        stream = stream[(pd.to_numeric(stream[0], errors='coerce').notnull()) \
-             & (pd.to_numeric(stream[1], errors='coerce').notnull())]
+        stream = stream[pd.to_numeric(stream[1], errors='coerce').notnull()]
 
-        task = wrap_long_task.apply_async(args=[stream])
+        task = wrap_long_task.apply_async(args=[stream.to_json(orient='records')])
         REDIS_CACHE.set("running_task_id", task.id)
         return 'submitted', 200
 
