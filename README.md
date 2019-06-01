@@ -1,5 +1,7 @@
 # k8s_example
-From a Python script to a scalable service in cloud
+From a Jupyter notebook to a scalable service in cloud
+
+![alt text](img/image.pdf)
 
 Run the single pod of containers
 --------------------------------
