@@ -1,7 +1,7 @@
 # k8s_example
 From a Jupyter notebook to a scalable service in cloud
 
-<img src="img/image.pdf" alt="logo"/>
+<img src="img/image.png" alt="logo"/>
 
 Run the single pod of containers
 --------------------------------
