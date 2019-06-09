@@ -58,19 +58,18 @@ def get_anomalous_data():
 
     # GET
     if request.method == 'GET':
-        task_id = REDIS_CACHE.get("running_task_id")
+        task_id = REDIS_CACHE.rpop("running_task_ids")
 
         if not task_id:
             return '', 202
 
         task = wrap_long_task.AsyncResult(task_id)
         if task.state == 'SUCCESS':
-            REDIS_CACHE.delete("running_task_id")
             return json.dumps(task.result), 200
         elif task.state == 'FAILURE':
-            REDIS_CACHE.delete("running_task_id")
             return str(task.traceback), 500
         else:
+            REDIS_CACHE.lpush("running_task_ids", task_id)
             return '', 202
     # POST
     elif request.method == 'POST':
@@ -80,7 +79,7 @@ def get_anomalous_data():
         stream = stream[pd.to_numeric(stream[1], errors='coerce').notnull()]
 
         task = wrap_long_task.apply_async(args=[stream.to_json(orient='records')])
-        REDIS_CACHE.set("running_task_id", task.id)
+        REDIS_CACHE.lpush("running_task_ids", task.id)
         return 'submitted', 200
 
 

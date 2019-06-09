@@ -6,14 +6,6 @@ From a Jupyter notebook to a scalable service in cloud
 Run the single pod of containers
 --------------------------------
 
-An example of request:
-```
-curl -X POST \
--H "Content-Type: application/x-www-form-urlencoded" \
--d "(18:27:26.345,2.345) (18:27:26.355,2.352) ..." \
-http://localhost/get_anomalous_data
-```
-
 To run the service as a single local pod of containers:
 
 * Run the containers:
@@ -25,14 +17,6 @@ To run the service as a single local pod of containers:
 
 Run the k8s cluster
 -------------------
-
-An example of request:
-```
-curl -X POST \
--H "Content-Type: application/x-www-form-urlencoded" \
--d "(18:27:26.345,2.345) (18:27:26.355,2.352) ..." \
-http://<cluster IP>:30000/get_anomalous_data
-```
 
 The prototype can be deployed using `minikube` to create a Kubernetes
 cluster running on VMs.
@@ -67,8 +51,8 @@ Consider to use the sample in `data/` for requests, e.g.:
 $ curl -X POST \
 -H "Content-Type: application/x-www-form-urlencoded" \
 -d "@./data/sample.body" \
-http://localhost/get_anomalous_data
+http://$(minikube ip):30000/get_anomalous_data
 submitted
-$ curl -X GET http://localhost/get_anomalous_data
+$ curl -X GET http://$(minikube ip):30000/get_anomalous_data
 [["18:27:26.352", 2.449], ["18:27:26.411", 2.554]]
 ```
